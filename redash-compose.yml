@@ -1,0 +1,23 @@
+version: '2'
+services:
+  server:
+    image: redash/redash:latest
+    command: server
+    ports:
+      - "5000:5000"
+    environment:
+      REDASH_LOG_LEVEL: "INFO"
+      REDASH_REDIS_URL: "redis://172.17.0.1:6379/0"
+      REDASH_DATABASE_URL: "postgres://vagrant:db1234@172.17.0.1/vagrant?sslmode=disable"
+    restart: always
+  worker:
+    image: redash/redash:latest
+    command: scheduler
+    environment:
+      PYTHONUNBUFFERED: 0
+      REDASH_LOG_LEVEL: "INFO"
+      REDASH_REDIS_URL: "redis://172.17.0.1:6379/0"
+      REDASH_DATABASE_URL: "postgres://vagrant:db1234@172.17.0.1/vagrant?sslmode=disable"
+      QUEUES: "queries,scheduled_queries,celery"
+      WORKERS_COUNT: 2
+    restart: always
